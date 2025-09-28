@@ -1,42 +1,74 @@
-import turtle
-import tkinter as tk
-from tkinter import filedialog, messagebox
+# ===============================================================
+# Proyecto: P4 Dibujante de Instrucciones desde Archivo de Texto
+# Autor: Raúl Alexi Rodriguez Fong 21760180
 
-# --- Configuración Inicial de Turtle y Ventana ---
+# ===============================================================
+
+# Importamos las librerías necesarias
+import turtle       # Para dibujar figuras en pantalla
+import tkinter as tk   # Para crear la ventana y los widgets
+from tkinter import filedialog, messagebox  # Para diálogos y alertas
+
+# ===============================================================
+# 1. CONFIGURACIÓN DE LA VENTANA PRINCIPAL
+# ===============================================================
 
 # Crear la ventana principal de Tkinter
-root = tk.Tk()
-root.title("Dibujante de Instrucciones de Archivo")
+root = tk.Tk()  # Tk() crea una ventana vacía
+root.title("Dibujante de Instrucciones de Archivo")  # Título de la ventana
 
-# Configuración del Canvas (área de dibujo) de 600x600
-CANVAS_WIDTH = 600
-CANVAS_HEIGHT = 600
+# Definir dimensiones del área de dibujo
+CANVAS_WIDTH = 600   # Ancho del canvas
+CANVAS_HEIGHT = 600  # Alto del canvas
+
+# Crear el canvas (área donde Turtle dibujará)
 canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
-# Usar 'top' y 'both' para que el canvas se expanda si la ventana cambia de tamaño
+# Empaquetar el canvas en la ventana. fill=BOTH permite que se expanda al cambiar la ventana
 canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-# Configuración de Turtle dentro del canvas de Tkinter
-t = turtle.TurtleScreen(canvas)
-t.screensize(CANVAS_WIDTH, CANVAS_HEIGHT) # Establecer el área lógica de la pantalla
-pincel = turtle.RawTurtle(t)
-pincel.speed(2) # Configurar la velocidad del puntero
+# ===============================================================
+# 2. CONFIGURACIÓN DE TURTLE DENTRO DEL CANVAS
+# ===============================================================
 
-# Inicializar parámetros de estado (usados en las funciones de dibujo)
+# Crear pantalla de Turtle ligada al canvas de Tkinter
+t = turtle.TurtleScreen(canvas)
+t.screensize(CANVAS_WIDTH, CANVAS_HEIGHT)  # Área lógica de dibujo (coordenadas)
+
+# Crear un objeto Turtle (el "pincel") para dibujar
+pincel = turtle.RawTurtle(t)
+pincel.speed(2)  # Velocidad de dibujo: 1 lenta, 10 rápida, 0 instantáneo
+
+# ===============================================================
+# 3. PARÁMETROS DE FIGURAS
+# ===============================================================
+
+# Diccionario con parámetros para cada tipo de figura
+# Facilita cambiar colores, tamaños o grosor sin modificar cada función
 parametros = {
     "cuadrado": {"color": "blue", "grosor": 3, "lado": 100},
     "triangulo": {"color": "green", "grosor": 3, "lado": 100},
     "circulo": {"color": "red", "grosor": 3, "radio": 50},
-    "linea": {"color": "purple", "grosor": 3, "distancia": 400}, # 'distancia' se usará como un largo simple para la línea
+    "linea": {"color": "purple", "grosor": 3, "distancia": 400},
 }
-# Establecer color y grosor iniciales del pincel
+
+# Establecemos color y grosor inicial del pincel
 pincel.color(parametros["cuadrado"]["color"])
 pincel.pensize(parametros["cuadrado"]["grosor"])
 
-# --- Funciones de Dibujo (Adaptadas para usar la posición actual del pincel) ---
+# ===============================================================
+# 4. FUNCIONES DE DIBUJO
+# ===============================================================
 
 def dibujar_cuadrado():
-    """ Dibuja un cuadrado de lado fijo a partir de la posición actual. """
-    p = parametros["cuadrado"]
+    """
+    Dibuja un cuadrado de lado fijo a partir de la posición actual del pincel.
+    Explicación Turtle:
+    - pendown(): baja el lápiz para dibujar
+    - forward(lado): avanza "lado" píxeles
+    - left(90): gira 90° a la izquierda
+    - penup(): levanta el lápiz para moverse sin dibujar
+    """
+    p = parametros["cuadrado"]  # Extraemos parámetros
     pincel.pendown()
     pincel.color(p["color"])
     pincel.pensize(p["grosor"])
@@ -46,7 +78,11 @@ def dibujar_cuadrado():
     pincel.penup()
 
 def dibujar_triangulo():
-    """ Dibuja un triángulo equilátero de lado fijo a partir de la posición actual. """
+    """
+    Dibuja un triángulo equilátero desde la posición actual.
+    Explicación Turtle:
+    - left(120): ángulo interno de un triángulo equilátero
+    """
     p = parametros["triangulo"]
     pincel.pendown()
     pincel.color(p["color"])
@@ -57,23 +93,26 @@ def dibujar_triangulo():
     pincel.penup()
 
 def dibujar_circulo():
-    """ Dibuja un círculo de radio fijo. """
+    """
+    Dibuja un círculo centrado en la posición actual.
+    Explicación:
+    - circle(radio) dibuja un círculo con el radio indicado
+    - Ajustamos posición para que el círculo quede centrado
+    """
     p = parametros["circulo"]
-    # Mover el pincel a la posición inicial (abajo del centro para el dibujo de circle)
-    pos_x, pos_y = pincel.position()
-    pincel.goto(pos_x, pos_y - p["radio"])
-    
+    pos_x, pos_y = pincel.position()  # Guardamos posición actual
+    pincel.goto(pos_x, pos_y - p["radio"])  # Ajustamos para que el círculo quede centrado
     pincel.pendown()
     pincel.color(p["color"])
     pincel.pensize(p["grosor"])
     pincel.circle(p["radio"])
-
-    # Regresar a la posición inicial después de dibujar el círculo
     pincel.penup()
-    pincel.goto(pos_x, pos_y)
+    pincel.goto(pos_x, pos_y)  # Volvemos a la posición original
 
 def dibujar_linea():
-    """ Dibuja una línea horizontal de largo fijo a partir de la posición actual. """
+    """
+    Dibuja una línea horizontal de longitud fija.
+    """
     p = parametros["linea"]
     pincel.pendown()
     pincel.color(p["color"])
@@ -82,111 +121,113 @@ def dibujar_linea():
     pincel.penup()
 
 def teleport(x, y):
-    """ Mueve el pincel a las coordenadas (x, y) sin dibujar (penup). """
+    """
+    Mueve el pincel a coordenadas (x, y) sin dibujar.
+    Explicación:
+    - penup(): levantamos el lápiz para no dibujar al movernos
+    - goto(x, y): mueve el pincel a la posición indicada
+    """
     pincel.penup()
     pincel.goto(x, y)
 
-# --- Procesamiento del Archivo de Instrucciones ---
+# ===============================================================
+# 5. PROCESAMIENTO DE ARCHIVO DE INSTRUCCIONES
+# ===============================================================
 
 def procesar_instrucciones(nombre_archivo):
     """
-    Abre y procesa el archivo de instrucciones línea por línea.
-    Ejecuta las acciones válidas y emite warnings para las inválidas.
+    Lee un archivo de texto línea por línea y ejecuta comandos válidos.
+    Maneja errores de codificación, archivo no encontrado y parámetros incorrectos.
     """
     try:
         try:
-            # Intenta abrir el archivo con la codificación estándar UTF-8
             with open(nombre_archivo, 'r', encoding='utf-8') as archivo:
                 lineas = archivo.readlines()
         except UnicodeDecodeError:
-            # Si UTF-8 falla, intenta con una codificación más flexible como 'latin-1'
-            print("Advertencia: No se pudo decodificar el archivo como UTF-8. Intentando con 'latin-1'.")
+            # Si UTF-8 falla, usamos Latin-1
+            print("Advertencia: Fallo al decodificar UTF-8. Intentando Latin-1.")
             with open(nombre_archivo, 'r', encoding='latin-1') as archivo:
                 lineas = archivo.readlines()
 
         print(f"--- Procesando archivo: {nombre_archivo} ---")
-        pincel.penup() # Asegurar que no dibuje al inicio
-        pincel.home()  # Poner el pincel en el centro (0, 0)
-        pincel.clear() # Limpiar la pantalla de cualquier dibujo anterior
+        pincel.penup()
+        pincel.home()  # Mover al centro
+        pincel.clear()  # Limpiar canvas
 
         for num_linea, linea in enumerate(lineas, 1):
-            instruccion = linea.strip().lower() 
-            
-            # Ignorar líneas vacías o comentarios (que empiezan con #)
+            instruccion = linea.strip().lower()  # Normalizamos
             if not instruccion or instruccion.startswith('#'):
-                continue
+                continue  # Ignoramos comentarios o líneas vacías
 
             partes = instruccion.split()
             comando = partes[0]
 
+            # Ejecutar comandos válidos
             if comando == "dibujar_cuadrado":
                 dibujar_cuadrado()
-            
             elif comando == "dibujar_triangulo":
                 dibujar_triangulo()
-            
             elif comando == "dibujar_circulo":
                 dibujar_circulo()
-            
             elif comando == "dibujar_linea":
                 dibujar_linea()
-            
             elif comando == "teleport":
+                # Validamos que haya 2 parámetros numéricos
                 if len(partes) == 3:
                     try:
                         x = int(partes[1])
                         y = int(partes[2])
                         teleport(x, y)
                     except ValueError:
-                        print(f"[WARNING - Línea {num_linea}]: Error en parámetros de 'teleport'. Se esperan números enteros. Ignorando: {linea.strip()}")
+                        print(f"[WARN - Línea {num_linea}] 'teleport' requiere números enteros.")
                 else:
-                    print(f"[WARNING - Línea {num_linea}]: Instrucción 'teleport' incompleta. Se esperan 2 coordenadas. Ignorando: {linea.strip()}")
-            
+                    print(f"[WARN - Línea {num_linea}] 'teleport' necesita 2 coordenadas.")
             else:
-                print(f"[WARNING - Línea {num_linea}]: Instrucción no válida. Ignorando: {linea.strip()}")
+                print(f"[WARN - Línea {num_linea}] Comando desconocido: {linea.strip()}")
 
     except FileNotFoundError:
-        messagebox.showerror("Error de Archivo", f"El archivo '{nombre_archivo}' no se encontró.")
-        print(f"ERROR: El archivo '{nombre_archivo}' no se encontró.")
+        messagebox.showerror("Error de Archivo", f"Archivo '{nombre_archivo}' no encontrado.")
+        print(f"ERROR: Archivo '{nombre_archivo}' no encontrado.")
     except Exception as e:
         messagebox.showerror("Error Inesperado", f"Ocurrió un error al leer el archivo: {e}")
-        print(f"Ocurrió un error inesperado al leer el archivo: {e}")
+        print(f"ERROR inesperado: {e}")
 
-# --- Ejecución Principal e Interfaz de Usuario ---
+# ===============================================================
+# 6. INTERFAZ DE USUARIO
+# ===============================================================
 
 def iniciar_proceso_de_dibujo():
     """
-    Abre un diálogo para que el usuario seleccione un archivo de instrucciones
-    y luego lo procesa para dibujar en el canvas.
+    Abre un diálogo para seleccionar archivo y procesa las instrucciones.
     """
     try:
         nombre_archivo = filedialog.askopenfilename(
             title="Seleccionar archivo de instrucciones",
             filetypes=[("Archivos de Texto", "*.txt"), ("Todos los archivos", "*.*")]
         )
-        
-        # Si el usuario selecciona un archivo (no cancela el diálogo)
+
         if nombre_archivo:
             procesar_instrucciones(nombre_archivo)
         else:
-            print("Selección de archivo cancelada por el usuario.")
-            
+            print("Usuario canceló la selección de archivo.")
     except Exception as e:
-        messagebox.showerror("Error", f"Ha ocurrido un error inesperado: {e}")
-        print(f"Ha ocurrido un error inesperado durante la ejecución: {e}")
+        messagebox.showerror("Error", f"Ocurrió un error inesperado: {e}")
+        print(f"ERROR inesperado durante la ejecución: {e}")
 
-# Crear un Frame para contener el botón y mejorar el layout
+# Frame para el botón
 frame_controles = tk.Frame(root)
 frame_controles.pack(side=tk.BOTTOM, pady=5, padx=10, fill='x')
 
-# Botón para cargar el archivo
+# Botón para iniciar el proceso
 boton_cargar = tk.Button(
-    frame_controles, 
-    text="Cargar y Dibujar desde Archivo", 
+    frame_controles,
+    text="Cargar y Dibujar desde Archivo",
     command=iniciar_proceso_de_dibujo
 )
 boton_cargar.pack()
 
-# Mantener la ventana abierta
-root.mainloop()
+# ===============================================================
+# 7. INICIAR LA APLICACIÓN
+# ===============================================================
 
+root.mainloop()  # Mantiene la ventana abierta y responde a eventos
