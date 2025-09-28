@@ -1,0 +1,16 @@
+teleport -200 150
+dibujar_cuadrado
+
+teleport 100 150
+dibujar_triangulo
+
+teleport 0 -50
+dibujar_circulo
+
+teleport -200 -200
+dibujar_linea
+
+dibujar_pentagono # Esto generará un warning
+
+teleport 150 0
+dibujar_cuadrado
