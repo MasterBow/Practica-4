@@ -92,3 +92,12 @@ dibujar_cuadrado
 
 teleport 0 0
 dibujar_circulo
+# Recursos utilizados
+## Software. 
+VisualStudioCode, Github, Documentos de google, Brave. 
+## Extensiones.
+IntelliCode, BlackBox, Pylance, Python Debugger, MicrosoftPowerTools. 
+## BlackBox (Modo Plugin)
+para corregir sintaxis, mediante la revision de errores de estructura en la implementación del código, ayudando a depurar errores de flujo o entender mejor los mensajes de error. 
+## Gemini 2.5 Flash 
+para ayudar a organizar documentación mediante la corrección de gramática. 
