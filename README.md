@@ -1,6 +1,4 @@
 # Practica-4
-Claro, aquí tienes una documentación general del código.
-
 Documentación del Programa "Dibujante con Turtle"
 Descripción General 
 Este programa es una aplicación de escritorio que permite dibujar figuras geométricas en una ventana a partir de un conjunto de instrucciones leídas desde un archivo de texto. Utiliza la biblioteca tkinter para crear la interfaz gráfica (la ventana y el botón) y la biblioteca turtle para realizar los dibujos sobre un lienzo (canvas).
